@@ -18,7 +18,10 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
 find_package(OpenGL)
 
-find_library(CORE_LIBS CoreFoundation)
+if (APPLE)
+    # For OSX, framework CoreFoundation is required
+    find_library(CORE_LIBS CoreFoundation)
+endif()
 
 if(NOT CORE_LIBS)
     message(FATAL_ERROR "CoreFoundation not found")
@@ -67,6 +70,7 @@ foreach(EXAMPLE ${EXAMPLES})
     set_property(TARGET ${EXAMPLE} PROPERTY DEBUG_POSTFIX _d)
     target_link_libraries(${EXAMPLE} ${COMMON_LIBS})
     if(APPLE)
+        # Use custom plist file in order to support Retina screen
         set_target_properties(${EXAMPLE} PROPERTIES MACOSX_BUNDLE_INFO_PLIST
             ${CMAKE_SOURCE_DIR}/resource/MacOSXBundleInfo.plist.in)
     endif()
